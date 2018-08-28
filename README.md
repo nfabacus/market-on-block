@@ -2,7 +2,11 @@
 Demo dapp with React and Solidity
 
 ## User Stories
-- Users can create sales contracts with   
+- Sellers can create sales contracts
+- Sellers can add a list of products
+- Purchasers can make payments and order products.
+- Each order tracks the order status.
+- Payments are released from the contract automatically when purchasers set the order status as 'received'.
 
 ## app-ui folder
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
