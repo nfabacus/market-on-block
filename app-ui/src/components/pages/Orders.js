@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-class Page2 extends Component {
+class Orders extends Component {
 
   componentDidMount(){
     window.scrollTo(0,0)
@@ -8,22 +8,22 @@ class Page2 extends Component {
 
   render() {
     return (
-      <div>
-        <div className="container-fluid block-row bg-order">
+      <section>
+        <section className="container-fluid block-row bg-order">
           <div className="container">
             <div className="title-area">
-              <h1 className="display-4">Page 2</h1>
+              <h1 className="display-4">Orders</h1>
             </div>
           </div>
-        </div>
-        <div className="container-fluid block-row">
+        </section>
+        <section className="container-fluid block-row">
           <div className="container">
             List
           </div>
-        </div>
-      </div>
+        </section>
+      </section>
     )
   }
 }
 
-export default Page2
+export default Orders

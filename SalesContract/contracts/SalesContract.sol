@@ -1,23 +1,10 @@
 pragma solidity ^0.4.17;
 
-contract SalesContractFactory {
-    address[] public deployedSalesContracts;
-    
-    function createCampaign() public {
-        address newSalesContract = new SalesContract(msg.sender);
-        deployedSalesContracts.push(newSalesContract);
-    }
-    
-    function getDeployedSalesContracts() public view returns (address[]) {
-        return deployedSalesContracts;
-    }
-}
-
 contract SalesContract {
     address public seller;
 
-    constructor (address creator) public payable {
-        seller = creator;
+    constructor () public payable {
+        seller = msg.sender;
     }
     
     struct Product {
