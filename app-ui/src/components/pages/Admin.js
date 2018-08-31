@@ -1,10 +1,25 @@
 import React, { Component } from 'react'
-import { Form, FormGroup, Label, Input, FormFeedback, FormText } from 'reactstrap';
+import ProductEntryForm from '../Form/ProductEntryForm'
+import web3 from '../../ethereum/web3';
+import salesContract from '../../ethereum/SalesContract';
 
 class Admin extends Component {
 
-  componentDidMount(){
+  async componentDidMount(){
     window.scrollTo(0,0)
+    this.contractInstance = await salesContract;
+    console.log('contactInstance>>>', this.contractInstance)
+  }
+
+  handleSubmit = async ({ productId, productDescription, unitPrice, availableQty }) => {
+    const accounts = await web3.eth.getAccounts()
+    console.log(productId, productDescription, unitPrice, availableQty)
+    console.log('accounts>>', accounts)
+    try {
+      await this.contractInstance.addProduct(productId, productDescription, unitPrice, availableQty, { from: accounts[0] })
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   render() {
@@ -20,28 +35,7 @@ class Admin extends Component {
         <section className="container-fluid block-row">
           <div className="container">
             <h2>Add a product</h2>
-            <Form>
-            <FormGroup>
-              <Label for="productId">Product Id</Label>
-              <Input id="productId" />
-              <FormText>Please add the product id here.</FormText>
-            </FormGroup>
-            <FormGroup>
-              <Label for="productId">Short Product Description</Label>
-              <Input id="productId" />
-              <FormText>Please add a short product description.</FormText>
-            </FormGroup>
-            <FormGroup>
-              <Label for="productId">Unit Price</Label>
-              <Input id="productId" />
-              <FormText>Please add its unit price here.</FormText>
-            </FormGroup>
-            <FormGroup>
-              <Label for="productId">Available Qty</Label>
-              <Input id="productId" />
-              <FormText>Please add its available Qty here.</FormText>
-            </FormGroup>
-            </Form>
+            <ProductEntryForm handleProductSubmit={this.handleSubmit} />
           </div>
         </section>
       </section>

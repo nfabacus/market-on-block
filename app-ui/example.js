@@ -30,6 +30,7 @@ class App extends Component {
   onSubmit = async (e) => {
     e.preventDefault();
     const accounts = await web3.eth.getAccounts();
+    console.log('accounts[0]>>', accounts[0])
     await this.contractInstance.setMessage(this.state.inputValue, { from: accounts[0] })
     this.setState({
       message: "",
