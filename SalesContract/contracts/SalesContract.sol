@@ -1,11 +1,19 @@
 pragma solidity ^0.4.17;
+pragma experimental ABIEncoderV2;
 
 contract SalesContract {
     address public seller;
-
+    uint public orderNumber;
+    
     constructor () public payable {
         seller = msg.sender;
+        orderNumber = 0;
     }
+    
+    // Products
+    string[] public listedProductsIds;
+    mapping(string => Product) products;
+    uint public productsCount;
     
     struct Product {
         string productId;
@@ -13,7 +21,6 @@ contract SalesContract {
         uint unitPrice;
         uint availableQty;
     }
-    Product[] public products;
     
     function addProduct(
         string _productId,
@@ -28,16 +35,27 @@ contract SalesContract {
            unitPrice: _unitPrice,
            availableQty: _availableQty
         });
-        products.push(newProduct);
+        products[_productId] = newProduct;
+        listedProductsIds.push(_productId);
+        productsCount++;
     }
     
-    function getProductsCount() public view returns (uint) {
-        return products.length;
+    function retrieveProduct(string _productId) public view returns (Product) {
+        return products[_productId];
     }
     
+    function deleteListedProduct(uint _index) public {
+        delete listedProductsIds[_index];
+        productsCount--;
+    }
+    
+    function getListedProductsIds() public view returns (string[]) {
+        return listedProductsIds;
+    }
+    
+    // Orders
     struct Order {
         address purchaser;
-        uint productIndex;
         string productId;
         uint qty;
         uint unitPrice;
@@ -47,17 +65,17 @@ contract SalesContract {
         bool received;
     }
     
-    Order[] public orders;
+    mapping(uint => Order) orders;
+    uint[] public listedOrderNumbers;
     
-    function orderProduct(uint _productIndex, uint _qty) public payable {
-        Product storage product = products[_productIndex];
+    function orderProduct(string _productId, uint _qty) public payable {
+        Product storage product = products[_productId];
         require(product.availableQty > 0);
         require(product.availableQty >= _qty);
         uint totalPrice = product.unitPrice * _qty;
         require(msg.value == totalPrice);
         Order memory newOrder = Order({
             purchaser: msg.sender,
-            productIndex: _productIndex,
             productId: product.productId,
             qty: _qty,
             unitPrice: product.unitPrice,
@@ -66,30 +84,32 @@ contract SalesContract {
             shipped: false,
             received: false
         });
-        orders.push(newOrder);
+        orderNumber++;
+        orders[orderNumber] = newOrder;
+        listedOrderNumbers.push(orderNumber);
         product.availableQty = product.availableQty - _qty;
-    }
+    } 
     
-    function getOrdersCount() public view returns (uint) {
-        return orders.length;
-    }
-    
-    function ship(uint _orderIndex) public {
+    function ship(uint _orderNumber) public {
         require(msg.sender == seller);
-        Order storage order = orders[_orderIndex];
+        Order storage order = orders[_orderNumber];
         require(order.paid == true);
         require(order.shipped == false);
         require(order.received == false);
         order.shipped = true;
     }
 
-    function receive(uint _orderIndex) public {
-        Order storage order = orders[_orderIndex];
+    function receive(uint _orderNumber) public {
+        Order storage order = orders[_orderNumber];
         require(msg.sender == order.purchaser);
         require(order.paid == true);
         require(order.shipped == true);
         require(order.received == false);
         order.received = true;
         seller.transfer(order.totalPrice);
+    }
+    
+    function retrieveOrder(uint _orderNumber) public view returns (Order) {
+        return orders[_orderNumber];
     }    
 }
