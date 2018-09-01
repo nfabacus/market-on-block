@@ -8,7 +8,6 @@ class Admin extends Component {
   async componentDidMount(){
     window.scrollTo(0,0)
     this.contractInstance = await salesContract;
-    console.log('contactInstance>>>', this.contractInstance)
   }
 
   handleSubmit = async ({ productId, productDescription, unitPrice, availableQty }) => {

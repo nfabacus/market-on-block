@@ -1,9 +1,14 @@
 import React, { Component } from 'react'
 
+import web3 from '../../ethereum/web3';
+import salesContract from '../../ethereum/SalesContract';
+
 class Orders extends Component {
 
-  componentDidMount(){
+  async componentDidMount(){
     window.scrollTo(0,0)
+    this.contractInstance = await salesContract;
+    console.log('contactInstance>>>', this.contractInstance)
   }
 
   render() {
