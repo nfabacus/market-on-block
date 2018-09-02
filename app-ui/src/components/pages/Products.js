@@ -70,7 +70,7 @@ class Products extends Component {
           contractInstance={this.contractInstance}
         />
         <section>
-          <section className="container-fluid block-row bg-contact">
+          <section className="container-fluid block-row bg-shop">
             <div className="container">
               <div className="title-area">
                 <h1 className="display-4">Products</h1>

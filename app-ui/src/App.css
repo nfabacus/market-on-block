@@ -314,7 +314,7 @@ a.menubar-link-item:focus {
   background-color: transparent;
 }
 
-.bg-contact {
+.bg-shop {
   margin:0;
   padding:0;
   height:100%;
@@ -335,6 +335,21 @@ a.menubar-link-item:focus {
   height:100%;
   font-family: sans-serif;
   background-image: url("./assets/ecommerce.jpg");
+	background-position: center;
+	background-size: cover;
+	background-attachment: inherit;
+	background-repeat: no-repeat;
+	margin: 0%;
+  color:white;
+  position:relative;
+}
+
+.bg-admin {
+  margin:0;
+  padding:0;
+  height:100%;
+  font-family: sans-serif;
+  background-image: url("./assets/admin.jpg");
 	background-position: center;
 	background-size: cover;
 	background-attachment: inherit;

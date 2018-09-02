@@ -28,7 +28,7 @@ class Admin extends Component {
   render() {
     return (
       <section>
-        <section className="container-fluid block-row bg-contact">
+        <section className="container-fluid block-row bg-admin">
           <div className="container">
             <div className="title-area">
               <h1 className="display-4">Admin</h1>
