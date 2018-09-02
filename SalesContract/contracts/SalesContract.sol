@@ -1,19 +1,12 @@
 pragma solidity ^0.4.17;
-pragma experimental ABIEncoderV2;
 
 contract SalesContract {
     address public seller;
     uint public orderNumber;
-    
-    constructor () public payable {
-        seller = msg.sender;
-        orderNumber = 0;
-    }
-    
-    // Products
+    uint public productsCount;
+
     string[] public listedProductsIds;
     mapping(string => Product) products;
-    uint public productsCount;
     
     struct Product {
         string productId;
@@ -22,38 +15,6 @@ contract SalesContract {
         uint availableQty;
     }
     
-    function addProduct(
-        string _productId,
-        string _productDescription,
-        uint _unitPrice,
-        uint _availableQty
-    ) public {
-        require(msg.sender == seller);
-        Product memory newProduct = Product({
-           productId: _productId,
-           productDescription: _productDescription,
-           unitPrice: _unitPrice,
-           availableQty: _availableQty
-        });
-        products[_productId] = newProduct;
-        listedProductsIds.push(_productId);
-        productsCount++;
-    }
-    
-    function retrieveProduct(string _productId) public view returns (Product) {
-        return products[_productId];
-    }
-    
-    function deleteListedProduct(uint _index) public {
-        delete listedProductsIds[_index];
-        productsCount--;
-    }
-    
-    function getListedProductsIds() public view returns (string[]) {
-        return listedProductsIds;
-    }
-    
-    // Orders
     struct Order {
         address purchaser;
         string productId;
@@ -68,6 +29,58 @@ contract SalesContract {
     mapping(uint => Order) orders;
     uint[] public listedOrderNumbers;
     
+    constructor () public payable {
+        seller = msg.sender;
+        orderNumber = 0;
+        productsCount = 0;
+    }
+    
+    // products functions
+    function addProduct(
+        string _productId,
+        string _productDescription,
+        uint _unitPrice,
+        uint _availableQty
+    ) public {
+        require(msg.sender == seller);
+        listedProductsIds.push(_productId);
+        Product memory newProduct = Product({
+           productId: _productId,
+           productDescription: _productDescription,
+           unitPrice: _unitPrice,
+           availableQty: _availableQty
+        });
+        products[_productId] = newProduct;
+        productsCount++;
+    }
+    
+    function getListedProductsIdLength() public view returns (uint) {
+        return listedProductsIds.length;
+    }
+    
+    function retrieveProduct(string _productId) public view returns (
+        string, string, uint, uint
+    ) {
+        return (
+            products[_productId].productId,
+            products[_productId].productDescription,
+            products[_productId].unitPrice,
+            products[_productId].availableQty
+        );
+    }
+    
+    function deleteListedProduct(uint _index) public {
+        delete listedProductsIds[_index];
+        productsCount--;
+    }
+    // function getListedProductsId(uint _index) public view returns (string) {
+    //     return listedProductsIds[_index];
+    // }
+    function getListedProduct(uint _index) public view returns (string) {
+        return listedProductsIds[_index];
+    }
+    
+    // Orders functions
     function orderProduct(string _productId, uint _qty) public payable {
         Product storage product = products[_productId];
         require(product.availableQty > 0);
@@ -108,8 +121,20 @@ contract SalesContract {
         order.received = true;
         seller.transfer(order.totalPrice);
     }
-    
-    function retrieveOrder(uint _orderNumber) public view returns (Order) {
-        return orders[_orderNumber];
-    }    
+
+    function retrieveOrder(uint _orderNumber) public view returns (
+        address, string, uint, uint, uint, bool, bool, bool
+    ) {
+        Order storage order = orders[_orderNumber];
+        return (
+            order.purchaser,
+            order.productId,
+            order.qty,
+            order.unitPrice,
+            order.totalPrice,
+            order.paid,
+            order.shipped,
+            order.received
+        );
+    }
 }

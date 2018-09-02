@@ -1,89 +1,99 @@
-import React, { Component } from 'react'
-
-import web3 from '../../ethereum/web3';
+import React, { Component, Fragment } from 'react'
 import salesContract from '../../ethereum/SalesContract'
 
-import { Row, Col, Card, CardImg, CardBody, CardTitle, CardText } from 'reactstrap'
-
-const styles = {
-  img: {
-    height: "200px",
-    objectFit: "cover"
-  }
-}
+import { Button, Row, Col } from 'reactstrap'
+import OrderModal from '../Modals/OrderModal'
+import ProductCard from '../Cards/ProductCard'
 
 class Products extends Component {
 
   state = {
     productCount: 0,
+    modal: false
   }
 
   async componentDidMount(){
     window.scrollTo(0,0)
     this.contractInstance = await salesContract
     console.log('contactInstance>>>', this.contractInstance)
-    let productCount = await this.contractInstance.getProductsCount()
+    let productIdListWholeCount = await this.contractInstance.getListedProductsIdLength()
+    productIdListWholeCount =  productIdListWholeCount['c'][0]
+    let productCount = await this.contractInstance.productsCount()
     productCount = productCount['c'][0]
-    let products = [...Array(productCount)].map(async(_, index) => {
-      const product = await this.contractInstance.products(index)
-      return { productId: product[0], productDescription: product[1], unitPrice: product[2].c[0], availableQty: product[3].c[0] }
-    })
+    console.log('wholeCount>>', productIdListWholeCount)
+    console.log(productCount)
+
+    let products = [...Array(productIdListWholeCount)]
+      .map(async(_, index) => {
+        const productId = await this.contractInstance.getListedProduct(index)
+        if(productId) {
+          const product = await this.contractInstance.retrieveProduct(productId)
+          return { productId: product[0], productDescription: product[1], unitPrice: product[2].c[0], availableQty: product[3].c[0] }
+        }
+        return null
+      })
+      .filter(product => product !== null)
+
     products = await Promise.all(products)
-    console.log('products>>>>', products)
+    
     this.setState({
       productCount,
       products
     })
   }
 
-  handleImgError = (productId) => {
+  toggleModal = (values) => {
     this.setState({
-      handleImgError: {
-        ...this.state.handleImgError, [productId]: true
-      }
+      modal: !this.state.modal,
+      selectedProduct: values?values: ""
     })
-  }
+  } 
 
   render() {
-    const { products, handleImgError } = this.state
+    const { productCount, products } = this.state
     return (
-      <section>
-        <section className="container-fluid block-row bg-contact">
-          <div className="container">
-            <div className="title-area">
-              <h1 className="display-4">Products</h1>
+      <Fragment>
+        <OrderModal
+          isOpen={this.state.modal}
+          toggle={this.toggleModal}
+          selectedProduct={this.state.selectedProduct}
+          contractInstance={this.contractInstance}
+        />
+        <section>
+          <section className="container-fluid block-row bg-contact">
+            <div className="container">
+              <div className="title-area">
+                <h1 className="display-4">Products</h1>
+              </div>
             </div>
-          </div>
-        </section>
-        <section className="container-fluid block-row">
-          <div className="container">
-            <p>Number of products listed: {this.state.productCount}</p>
-            <Row>
-              {
-                products&&products.map(({productId, productDescription, unitPrice, availableQty}, i) => (
-                  <Col lg="3" md="6" className="pb-4">
-                    <Card className="h-100" key={i}>
-                      {
-                        handleImgError&&handleImgError[productId]?
-                        <CardImg style={styles.img} top src={`http://res.cloudinary.com/abacus/image/upload/shop-on-the-block/products/defaultImg.jpg`} alt="placeholder img"/>
-                        :
-                        <CardImg style={styles.img} top src={`http://res.cloudinary.com/abacus/image/upload/shop-on-the-block/products/${productId}.jpg?`} alt={productId} onError={()=>this.handleImgError(productId)}/>
-                      }
-                      <CardBody>
-                        <CardTitle>{productDescription}</CardTitle>
-                        <CardText>Product Id: {productId}</CardText>
-                        <CardText>Unit Price: {unitPrice}</CardText>
-                        <CardText>Available Qty: {availableQty}</CardText>
-                      </CardBody>
-                    </Card>
-                  </Col>
-                ))
-              }
-            </Row>
+          </section>
+          <section className="container-fluid block-row">
+            <div className="container">
+              <p>Number of products listed: {productCount}</p>
+              <Row>
+                {
+                  products&&products.map((product, i) => (
+                    <Col lg="3" md="6" className="pb-4" key={i}>
+                      <ProductCard
+                        product={product}
+                      >
+                        <Button
+                          color="primary"
+                          className="m-3"
+                          onClick={()=>this.toggleModal(product)}
+                        >
+                          Order
+                        </Button>
+                      </ProductCard>
+                    </Col>
+                  ))
+                }
+              </Row>
 
-          </div>
+            </div>
+          </section>
         </section>
-      </section>
+      </Fragment>
     )
   }
 }

@@ -1,5 +1,10 @@
 body {
   margin: 0;
   padding: 0;
+  padding-right: 0 !important;
   font-family: sans-serif;
+}
+
+.modal-open {
+  overflow: auto;
 }

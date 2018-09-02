@@ -12,8 +12,6 @@ class Admin extends Component {
 
   handleSubmit = async ({ productId, productDescription, unitPrice, availableQty }) => {
     const accounts = await web3.eth.getAccounts()
-    console.log(productId, productDescription, unitPrice, availableQty)
-    console.log('accounts>>', accounts)
     try {
       await this.contractInstance.addProduct(productId, productDescription, unitPrice, availableQty, { from: accounts[0] })
     } catch(err) {
