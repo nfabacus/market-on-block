@@ -40,6 +40,16 @@ class Products extends Component {
       productCount,
       products
     })
+
+    this.contractInstance.ProductEvent({}, {
+      fromBlock: 0,
+      toBlock: 'latest'
+    }).watch((error, event)=>{
+      let product = event.args.product;
+      console.log("updated product!!!>>>", product)
+      product = { productId: product[0], productDescription: product[1], unitPrice: product[2].c[0], availableQty: product[3].c[0] }
+      console.log("updated product formatted!!!>>>", product)
+    })
   }
 
   toggleModal = (values) => {

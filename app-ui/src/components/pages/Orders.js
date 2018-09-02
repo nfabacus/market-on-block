@@ -14,10 +14,8 @@ class Orders extends Component {
   async componentDidMount(){
     window.scrollTo(0,0)
     this.contractInstance = await salesContract;
-    console.log('contactInstance>>>', this.contractInstance)
     let totalOrder = await this.contractInstance.orderNumber()
     totalOrder = totalOrder['c'][0]
-    console.log('totalOrder>>>', totalOrder)
 
     let orders = [...Array(totalOrder)]
       .map(async(_, index) => {
@@ -26,6 +24,7 @@ class Orders extends Component {
         if(listedOrderNumber) {
           const retrievedOrder = await this.contractInstance.retrieveOrder(listedOrderNumber)
           return {
+            orderNumber: listedOrderNumber,
             purchaser: retrievedOrder[0],
             productId: retrievedOrder[1],
             qty: retrievedOrder[2].c[0],
@@ -41,11 +40,57 @@ class Orders extends Component {
       .filter(order => order !== null)
 
       orders = await Promise.all(orders)
-      console.log(orders)
+      const seller = await this.contractInstance.seller()
+      const accounts = await web3.eth.getAccounts()
+      const currentUser = accounts[0].toLowerCase()
+      const usersOrders = orders.filter(order => order.purchaser === currentUser || seller === currentUser)
+
       this.setState({
         totalOrder,
-        orders
+        orders: usersOrders
       })
+
+      this.contractInstance.OrderEvent({}, {
+        fromBlock: 0,
+        toBlock: 'latest'
+      }).watch((error, event)=>{
+        let order = event.args.order;
+        console.log("updated order!!!>>>", order)
+        order = {
+          // orderNumber: listedOrderNumber,
+          purchaser: order[0],
+          productId: order[1],
+          qty: order[2].c[0],
+          unitPrice: order[3].c[0],
+          totalPrice: order[4].c[0],
+          paid: order[5],
+          shipped: order[6],
+          received: order[7]
+        }
+        console.log("updated order formatted!!!>>>", order)
+      })
+  }
+
+  handleOrderStatusChange = async (orderNumber, statusType) => {
+    console.log(orderNumber, statusType)
+    if(statusType==="ship"){
+      console.log("shipping...")
+      const accounts = await web3.eth.getAccounts()
+      try {
+        await this.contractInstance.ship(orderNumber, { from: accounts[0]})
+      } catch(err) {
+        console.log(err);
+      }
+    }
+    if(statusType==="receive"){
+      console.log("receiving...")
+      const accounts = await web3.eth.getAccounts()
+      try {
+        await this.contractInstance.receive(orderNumber, { from: accounts[0]})
+      } catch(err) {
+        console.log(err);
+      }
+    }
   }
 
   render() {
@@ -69,6 +114,7 @@ class Orders extends Component {
                   <Col lg="3" md="6" className="pb-4" key={i}>
                     <OrderCard
                       order={order}
+                      handleOnChange={this.handleOrderStatusChange}
                     />
                   </Col>
                 ))

@@ -24,7 +24,7 @@ class OrderCard extends Component {
 
   render() {
     const { handleImgError } = this.state
-    const {purchaser, productId, qty, unitPrice, totalPrice, paid, shipped, received } = this.props.order
+    const { orderNumber, purchaser, productId, qty, unitPrice, totalPrice, paid, shipped, received } = this.props.order
     return (
       <Card className="h-100">
         {
@@ -34,8 +34,9 @@ class OrderCard extends Component {
           <CardImg style={styles.img} top src={`http://res.cloudinary.com/abacus/image/upload/shop-on-the-block/products/${productId}.jpg?`} alt={productId} onError={()=>this.handleImgError(productId)}/>
         }
         <CardBody>
-          <CardTitle>{productId}</CardTitle>
+          <CardTitle>Order No: {orderNumber}</CardTitle>
           <CardText>Purchaser: {purchaser}</CardText>
+          <CardText>Product Id: {productId}</CardText>
           <CardText>Unit Price: {unitPrice}</CardText>
           <CardText>Total Price: {totalPrice}</CardText>
           <CardText>Ordered Qty: {qty}</CardText>
@@ -47,13 +48,21 @@ class OrderCard extends Component {
           </FormGroup>
           <FormGroup check>
             <Label check>
-              <Input type="checkbox" checked={shipped} />{' '}
+              <Input
+                type="checkbox"
+                checked={shipped}
+                onChange={()=>this.props.handleOnChange(orderNumber, "ship")}
+              />{' '}
                 Shipped
             </Label>
           </FormGroup>
           <FormGroup check>
             <Label check>
-              <Input type="checkbox" checked={received} />{' '}
+              <Input
+                type="checkbox"
+                checked={received}
+                onChange={()=>this.props.handleOnChange(orderNumber, "receive")}
+              />{' '}
                 Received
             </Label>
           </FormGroup>

@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import web3 from '../ethereum/web3';
+import salesContract from '../ethereum/SalesContract';
 import { Link } from 'react-router-dom'
 import {
   Nav,
@@ -10,8 +12,23 @@ export default class Menubar extends Component {
     super(props);
     this.state = {
       isOpen: false,
-      width: window.innerWidth
+      width: window.innerWidth,
+      isAdmin: false
     }
+  }
+
+  async componentDidMount() {
+    this.contractInstance = await salesContract;
+    const seller = await this.contractInstance.seller()
+    const accounts = await web3.eth.getAccounts()
+    console.log("seller>>", seller)
+    console.log("user>>", accounts[0].toLowerCase())
+    if(accounts[0].toLowerCase() === seller) {
+      this.setState({
+        isAdmin: true
+      })
+    }
+    console.log(this.state.isAdmin)
   }
 
   toggle=()=>{
@@ -56,17 +73,19 @@ export default class Menubar extends Component {
           <div className="menubar-modal">
             <Nav className="m-auto" navbar>
               <NavItem className="menubar-item focus-in-contract-bck">
-                <a href="">Link</a>
-              </NavItem>
-              <NavItem className="menubar-item focus-in-contract-bck">
                 <Link onClick={this.toggle} to="/">Products</Link>
               </NavItem>
               <NavItem className="menubar-item focus-in-contract-bck">
                 <Link  onClick={this.toggle} to="/orders">Orders</Link>
               </NavItem>
-              <NavItem className="menubar-item focus-in-contract-bck">
-                <Link  onClick={this.toggle} to="/admin">Admin</Link>
-              </NavItem>
+              {
+                this.state.isAdmin&&
+                <NavItem
+                  className="menubar-item focus-in-contract-bck"
+                >
+                  <Link  onClick={this.toggle} to="/admin">Admin</Link>
+                </NavItem>
+              }
             </Nav>
           </div>
         }
@@ -74,7 +93,14 @@ export default class Menubar extends Component {
             <div className="menubar-link-group">
                 <Link className="menubar-link-item" to="/">Products</Link>
                 <Link className="menubar-link-item" to="/orders">Orders</Link>
-                <Link className="menubar-link-item" to="/admin">Admin</Link>
+                {
+                  this.state.isAdmin&&
+                  <Link
+                    className="menubar-link-item" to="/admin"
+                  >
+                    Admin
+                  </Link>
+                }
             </div>
         </div>
       </nav>

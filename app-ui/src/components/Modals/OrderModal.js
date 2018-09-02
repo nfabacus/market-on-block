@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Modal, ModalHeader, ModalBody } from 'reactstrap'
 import web3 from '../../ethereum/web3';
 import OrderForm from '../Form/OrderForm'
-import ProductCard from '../ProductCards/ProductCard'
+import ProductCard from '../Cards/ProductCard'
 
 class OrderModal extends Component {
 
