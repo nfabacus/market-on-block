@@ -1,19 +1,30 @@
-# Market on Block
+# Shop on the Block
 Demo dapp with React and Solidity
+
+Simple online shop concept on Ethereum blockchain
 
 ## User Stories
 - Sellers can create sales contracts
-- Sellers can add a list of products
-- Purchasers can make payments and order products.
-- Each order tracks the order status.
-- Payments are released from the contract automatically when purchasers set the order status as 'received'.
+    - Only one seller at the moment :white_check_mark:
+- Sellers can add a list of products :white_check_mark:
+- Purchasers can make payments and order products. :white_check_mark:
+- Each order tracks the order status. :white_check_mark:
+- Payments are released from the contract automatically when purchasers set the order status as 'received'. :white_check_mark:
 
-## app-ui folder
+## Future Stories and ToDos
+- Events not working for auto-updating the data on ui - to be fixed.
+- Seller can delete products.
+- Refactoring app-ui
+  - Maybe add Redux
+- User's physical address should not be recorded to the blockchain for privacy reasons, so maybe store it in a normal database (e.g. mongoDB) accessible by authenticated server.
+
+## Structure
+### app-ui folder
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 This app is ejected from create-react-app.
 
-## SalesContract folder
+### SalesContract folder
 This section was bootstrapped with Truffle init.
 It contains a Smart Contract (SalesContract.sol) under the contracts folder.
 

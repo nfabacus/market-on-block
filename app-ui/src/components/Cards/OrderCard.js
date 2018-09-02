@@ -25,6 +25,7 @@ class OrderCard extends Component {
   render() {
     const { handleImgError } = this.state
     const { orderNumber, purchaser, productId, qty, unitPrice, totalPrice, paid, shipped, received } = this.props.order
+    const { isAdmin } = this.props
     return (
       <Card className="h-100">
         {
@@ -35,7 +36,10 @@ class OrderCard extends Component {
         }
         <CardBody>
           <CardTitle>Order No: {orderNumber}</CardTitle>
-          <CardText>Purchaser: {purchaser}</CardText>
+          {
+            isAdmin&&
+              <CardText>Purchaser: {purchaser}</CardText>
+          }
           <CardText>Product Id: {productId}</CardText>
           <CardText>Unit Price: {unitPrice}</CardText>
           <CardText>Total Price: {totalPrice}</CardText>

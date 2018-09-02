@@ -8,7 +8,8 @@ import OrderCard from '../Cards/OrderCard'
 class Orders extends Component {
 
   state = {
-    totalOrder: 0
+    totalOrder: 0,
+    isAdmin: false
   }
 
   async componentDidMount(){
@@ -47,7 +48,8 @@ class Orders extends Component {
 
       this.setState({
         totalOrder,
-        orders: usersOrders
+        orders: usersOrders,
+        isAdmin: currentUser === seller? true : false
       })
 
       this.contractInstance.OrderEvent({}, {
@@ -94,7 +96,7 @@ class Orders extends Component {
   }
 
   render() {
-    const { totalOrder, orders } = this.state
+    const { totalOrder, orders, isAdmin } = this.state
 
     return (
       <section>
@@ -115,6 +117,7 @@ class Orders extends Component {
                     <OrderCard
                       order={order}
                       handleOnChange={this.handleOrderStatusChange}
+                      isAdmin={isAdmin}
                     />
                   </Col>
                 ))
