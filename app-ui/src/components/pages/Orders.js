@@ -51,26 +51,6 @@ class Orders extends Component {
         orders: usersOrders,
         isAdmin: currentUser === seller? true : false
       })
-
-      this.contractInstance.OrderEvent({}, {
-        fromBlock: 0,
-        toBlock: 'latest'
-      }).watch((error, event)=>{
-        let order = event.args.order;
-        console.log("updated order!!!>>>", order)
-        order = {
-          // orderNumber: listedOrderNumber,
-          purchaser: order[0],
-          productId: order[1],
-          qty: order[2].c[0],
-          unitPrice: order[3].c[0],
-          totalPrice: order[4].c[0],
-          paid: order[5],
-          shipped: order[6],
-          received: order[7]
-        }
-        console.log("updated order formatted!!!>>>", order)
-      })
   }
 
   handleOrderStatusChange = async (orderNumber, statusType) => {

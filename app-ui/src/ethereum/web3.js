@@ -11,5 +11,6 @@ if (typeof window !== 'undefined' && typeof window.web3 !== 'undefined') {
   const provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
   web3 = new Web3(provider);
 }
+web3.eth.defaultAccount = web3.eth.accounts[0];
 
 export default web3;
